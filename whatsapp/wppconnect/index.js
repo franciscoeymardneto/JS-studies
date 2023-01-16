@@ -1,4 +1,5 @@
 const { create } = require('@wppconnect-team/wppconnect')
+const { retext } = require('retext')
 
 create()
     .then((wpp) => start(wpp))
@@ -7,7 +8,16 @@ create()
 const start = (wpp) => {
     wpp.onMessage(async (message) => {
         console.log(message.body)
-       
-        wpp.sendMessage(message.from, response);
+
+        retext()
+            .use(retextProfanities)
+            .use(retextEmoji, { convert: 'encode' })
+            .process(message.body)
+            .then((file) => {
+                wpp.sendMessage(message.from, 'Retext:')
+                wpp.sendMessage(message.from, String(file))
+            })
+
+        
     });
 }
